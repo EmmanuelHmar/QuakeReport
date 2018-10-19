@@ -11,9 +11,9 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class CustomArrayAdapter extends ArrayAdapter<Earthquakes> {
+public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
-    public CustomArrayAdapter(@NonNull Context context, @NonNull ArrayList<Earthquakes> objects) {
+    public EarthquakeAdapter(@NonNull Context context, @NonNull ArrayList<Earthquake> objects) {
         super(context, 0, objects);
     }
 
@@ -23,10 +23,10 @@ public class CustomArrayAdapter extends ArrayAdapter<Earthquakes> {
         View listItemView = convertView;
 
         if (listItemView==null) {
-            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.list_item, parent, false);
+            listItemView = LayoutInflater.from(getContext()).inflate(R.layout.earthquake_list_item, parent, false);
         }
 
-        Earthquakes earthquake = getItem(position);
+        Earthquake earthquake = getItem(position);
 
         TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
 
