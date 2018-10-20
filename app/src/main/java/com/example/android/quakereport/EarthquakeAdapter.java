@@ -9,7 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
@@ -22,7 +24,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View listItemView = convertView;
 
-        if (listItemView==null) {
+        if (listItemView == null) {
             listItemView = LayoutInflater.from(getContext()).inflate(R.layout.earthquake_list_item, parent, false);
         }
 
@@ -36,10 +38,33 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         city.setText(earthquake.getCity());
 
+        Date dateObject = new Date(earthquake.getTimeInMilliseconds());
+
+        String dateToDisplay = formatDate(dateObject);
+
         TextView date = (TextView) listItemView.findViewById(R.id.date);
 
-        date.setText(earthquake.getDate());
+        date.setText(dateToDisplay);
+
+        TextView time = (TextView) listItemView.findViewById(R.id.time);
+
+        String timeToDisplay = formatTime(dateObject);
+
+        time.setText(timeToDisplay);
 
         return listItemView;
+    }
+
+    //    Format the date in milliseconds to Month Day, Year
+    private String formatDate(Date dateObject) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy");
+        return dateFormat.format(dateObject);
+    }
+
+    //    Format the date in milliseconds to Hour:Minute AM/PM
+    private String formatTime(Date dateObject) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a");
+
+        return timeFormat.format(dateObject);
     }
 }
