@@ -1,8 +1,10 @@
 package com.example.android.quakereport;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,12 +37,18 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         String originalLocation = earthquake.getLocation();
 
-        TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
+        TextView magnitudeView = (TextView) listItemView.findViewById(R.id.magnitude);
+
+        GradientDrawable gradientDrawable = (GradientDrawable) magnitudeView.getBackground();
+
+        int bgColor = getMagnitudeColor(earthquake.getMagnitude());
+
+        gradientDrawable.setColor(bgColor);
 
         DecimalFormat decimalFormat = new DecimalFormat("0.0");
         String magnitudeFormatted = decimalFormat.format(earthquake.getMagnitude());
 
-        magnitude.setText(magnitudeFormatted);
+        magnitudeView.setText(magnitudeFormatted);
 
 //        The location and how close to the location it is
         String primaryLocation, locationOffset;
@@ -68,6 +76,7 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         TextView date = (TextView) listItemView.findViewById(R.id.date);
         date.setText(dateToDisplay);
 
+
         TextView time = (TextView) listItemView.findViewById(R.id.time);
         String timeToDisplay = formatTime(dateObject);
 
@@ -76,24 +85,45 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         return listItemView;
     }
 
-    private String getNearLocation(String str) {
-        int indexSplit = str.indexOf(" of ");
+    private int getMagnitudeColor(Double magnitude) {
+        int color;
+        switch ((int) Math.floor(magnitude)) {
 
-        if (indexSplit == -1) {
-            return getContext().getString(R.string.near_the);
+            case 0:
+            case 1:
+                color = R.color.magnitude1;
+                break;
+            case 2:
+                color = R.color.magnitude2;
+                break;
+            case 3:
+                color = R.color.magnitude3;
+                break;
+            case 4:
+                color = R.color.magnitude4;
+                break;
+            case 5:
+                color = R.color.magnitude5;
+                break;
+            case 6:
+                color = R.color.magnitude6;
+                break;
+            case 7:
+                color = R.color.magnitude7;
+                break;
+            case 8:
+                color = R.color.magnitude8;
+                break;
+            case 9:
+                color = R.color.magnitude9;
+                break;
+            default:
+                color = R.color.magnitude10plus;
+                break;
         }
-
-        return str.substring(0, indexSplit + 4);
+        return ContextCompat.getColor(getContext(), color);
     }
 
-    private String getLocation(String str) {
-        int index = str.indexOf(" of ");
-
-        if (index == -1) {
-            return str;
-        }
-        return str.substring(index + 4);
-    }
 
     //    Format the date in milliseconds to Month Day, Year
     private String formatDate(Date dateObject) {
