@@ -13,15 +13,23 @@
         android:id="@+id/magnitude"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:padding="16dp"
         tools:text="Scale" />
 
     <TextView
-        android:id="@+id/city"
+        android:id="@+id/nearLocation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="1"
+        android:padding="16dp"
+        tools:text="City" />
+
+    <TextView
+        android:id="@+id/Location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:padding="16dp"
         tools:text="City" />
 
@@ -29,7 +37,7 @@
         android:id="@+id/date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:padding="16dp"
         tools:text="Date" />
 
@@ -37,7 +45,7 @@
         android:id="@+id/time"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="1"
         android:padding="16dp"
         tools:text="Date" />
 

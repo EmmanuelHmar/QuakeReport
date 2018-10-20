@@ -30,29 +30,49 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
 
         Earthquake earthquake = getItem(position);
 
-        TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
+        String originalLocation = earthquake.getCity();
 
+        TextView magnitude = (TextView) listItemView.findViewById(R.id.magnitude);
         magnitude.setText(earthquake.getMagnitude());
 
-        TextView city = (TextView) listItemView.findViewById(R.id.city);
+        TextView nearCity = (TextView) listItemView.findViewById(R.id.nearLocation);
+        nearCity.setText(getNearLocation(originalLocation));
 
-        city.setText(earthquake.getCity());
+        TextView city = (TextView) listItemView.findViewById(R.id.Location);
+        city.setText(getLocation(originalLocation));
 
         Date dateObject = new Date(earthquake.getTimeInMilliseconds());
 
         String dateToDisplay = formatDate(dateObject);
 
         TextView date = (TextView) listItemView.findViewById(R.id.date);
-
         date.setText(dateToDisplay);
 
         TextView time = (TextView) listItemView.findViewById(R.id.time);
-
         String timeToDisplay = formatTime(dateObject);
 
         time.setText(timeToDisplay);
 
         return listItemView;
+    }
+
+    private String getNearLocation(String str) {
+        int indexSplit = str.indexOf(" of ");
+
+        if (indexSplit == -1) {
+            return getContext().getString(R.string.near_the);
+        }
+
+        return str.substring(0, indexSplit + 4);
+    }
+
+    private String getLocation(String str){
+        int index = str.indexOf(" of ");
+
+        if (index==-1) {
+            return str;
+        }
+        return str.substring(index + 4);
     }
 
     //    Format the date in milliseconds to Month Day, Year
