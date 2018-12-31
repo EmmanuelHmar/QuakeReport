@@ -61,13 +61,14 @@ public final class QueryUtils {
 
                 String place = properties.optString("place");
 
+                String URI = properties.optString("url");
+
 //                String time = properties.optString("time");
 //                long timeInMilliseconds = Long.valueOf(time);
 
                 long timeInMilliseconds = properties.getLong("time");
 
-
-                earthquakes.add(new Earthquake(magnitude, place, timeInMilliseconds));
+                earthquakes.add(new Earthquake(magnitude, place, timeInMilliseconds, URI));
             }
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
