@@ -36,4 +36,10 @@
     <!--colors for magnitude 10 and up-->
     <color name="magnitude10plus">#C03823</color>
 
+    <!--Text color for the details of the earthquake in the list item-->
+    <color name="textColorEarthquakeDetails">#B4BAC0</color>
+
+    <!--Text color for the pprimary locationof the earthquake in the list-->
+    <color name="textColorEarthquakeLocation">#2B3D4D</color>
+
 </resources>
