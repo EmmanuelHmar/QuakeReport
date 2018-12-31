@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.net.URI;
 import java.util.ArrayList;
 
 public class EarthquakeActivity extends AppCompatActivity {
@@ -61,10 +62,18 @@ public class EarthquakeActivity extends AppCompatActivity {
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                String uri = earthquakes.get(position).getURI();
-                String uri = adapter.getItem(position).getURI();
-                Log.d("EAZY", uri);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+
+//                Get the current earthquake view location
+                Earthquake currentEarthquake = adapter.getItem(position);
+
+//                Parse the url string into uri object
+                Uri uri = Uri.parse(currentEarthquake.getURI());
+
+                Log.d("EAZY", uri.toString());
+
+//                Create a new intent
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+
                 startActivity(intent);
         }});
 
