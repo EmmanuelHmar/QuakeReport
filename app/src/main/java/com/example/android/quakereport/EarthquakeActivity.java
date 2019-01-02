@@ -35,52 +35,49 @@ public class EarthquakeActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
+    private EarthquakeAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.earthquake_activity);
 
         // Create a fake list of earthquake locations.
-//        final ArrayList<Earthquake> earthquakes = QueryUtils.extractEarthquakes();
+//        final ArrayList<Earthquake> earthquakes = QueryUtils.extractFeaturesFromJson();
         new earthquakeAsyncTask().execute(JSON_URL);
 
-    }
+        // Find a reference to the {@link ListView} in the layout
+        ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
-//    A method to update the UI once the asynctask finishes
-        private void updateUI(ArrayList<Earthquake> earthquakeArrayList) {
+        // Create a new {@link ArrayAdapter} of earthquakes
+        adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
-            // Find a reference to the {@link ListView} in the layout
-            ListView earthquakeListView = (ListView) findViewById(R.id.list);
+        // Set the adapter on the {@link ListView}
+        // so the list can be populated in the user interface
+        earthquakeListView.setAdapter(adapter);
 
-            // Create a new {@link ArrayAdapter} of earthquakes
-            final EarthquakeAdapter adapter = new EarthquakeAdapter(this, earthquakeArrayList);
-
-            // Set the adapter on the {@link ListView}
-            // so the list can be populated in the user interface
-            earthquakeListView.setAdapter(adapter);
-
-            earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
 //                Get the current earthquake view location
-                    Earthquake currentEarthquake = adapter.getItem(position);
+                Earthquake currentEarthquake = adapter.getItem(position);
 
 //                Parse the url string into uri object
-                    Uri uri = Uri.parse(currentEarthquake.getURI());
+                Uri uri = Uri.parse(currentEarthquake.getURI());
 
-                    Log.d("EAZY", uri.toString());
+                Log.d("EAZY", uri.toString());
 
 //                Create a new intent
-                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
 
-                    startActivity(intent);
-                }
-            });
+                startActivity(intent);
+            }
+        });
     }
 
 
-//    The earthquake ASYNCTASK to handle the
+    //    The earthquake ASYNCTASK to handle the
     private class earthquakeAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
 
         @Override
@@ -94,7 +91,15 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Earthquake> earthquakeList) {
-            updateUI(earthquakeList);
+//            Clear the adapter of the previous earthquake data
+            adapter.clear();
+
+//            If there is a valid list od earthquakes, add them to the dataset
+//            This triggers the listView
+            if (earthquakeList != null && !earthquakeList.isEmpty()) {
+                adapter.addAll(earthquakeList);
+            }
+
         }
     }
 }
