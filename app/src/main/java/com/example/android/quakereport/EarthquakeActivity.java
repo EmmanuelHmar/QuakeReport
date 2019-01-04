@@ -15,7 +15,11 @@
  */
 package com.example.android.quakereport;
 
+import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Intent;
+import android.content.Loader;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -26,8 +30,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class EarthquakeActivity extends AppCompatActivity {
+public class EarthquakeActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Earthquake>> {
 
     //    The URL that holds the JSON data we want
     private static final String JSON_URL =
@@ -44,7 +49,7 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         // Create a fake list of earthquake locations.
 //        final ArrayList<Earthquake> earthquakes = QueryUtils.extractFeaturesFromJson();
-        new earthquakeAsyncTask().execute(JSON_URL);
+//        new earthquakeAsyncTask().execute(JSON_URL);
 
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
@@ -74,6 +79,29 @@ public class EarthquakeActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
+        return new EarthquakeLoader(EarthquakeActivity.this, JSON_URL);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakeList) {
+        adapter.clear();
+
+        if (earthquakeList != null && !earthquakeList.isEmpty()) {
+           adapter.addAll(earthquakeList);
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<Earthquake>> loader) {
+        adapter.clear();
+
     }
 
 
@@ -102,4 +130,26 @@ public class EarthquakeActivity extends AppCompatActivity {
 
         }
     }
+
+    private static class earthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
+
+        public earthquakeLoader(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onStartLoading() {
+           forceLoad();
+        }
+
+        @Override
+        public List<Earthquake> loadInBackground() {
+           List<Earthquake> earthquakes;
+
+            earthquakes = QueryUtils.fetchEarthquakeData(JSON_URL);
+
+            return earthquakes;
+        }
+    }
+
 }
