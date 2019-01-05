@@ -23,6 +23,12 @@ public final class QueryUtils {
 
 
     public static ArrayList<Earthquake> fetchEarthquakeData(String requestUrl) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Log.i("QueryUTils: ", " FETCHEARTHQUAKEDATA");
         URL url = createUrl(requestUrl);
 
         String jsonResponse = null;

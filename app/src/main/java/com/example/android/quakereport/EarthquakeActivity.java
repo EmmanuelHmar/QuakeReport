@@ -16,18 +16,20 @@
 package com.example.android.quakereport;
 
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,8 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     public static final String LOG_TAG = EarthquakeActivity.class.getName();
 
     private EarthquakeAdapter adapter;
+    private TextView textView;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +58,17 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         // Find a reference to the {@link ListView} in the layout
         ListView earthquakeListView = (ListView) findViewById(R.id.list);
 
+        textView = (TextView) findViewById(R.id.textview);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
         // Create a new {@link ArrayAdapter} of earthquakes
         adapter = new EarthquakeAdapter(this, new ArrayList<Earthquake>());
 
+//        Set a text view to view if there is no content to be shown
+        earthquakeListView.setEmptyView(textView);
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
+
         earthquakeListView.setAdapter(adapter);
 
         earthquakeListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,76 +90,56 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             }
         });
 
-        getLoaderManager().initLoader(0, null, this);
+//        Check for internet connectivity
+        ConnectivityManager cm = (ConnectivityManager) getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        boolean isConnected = networkInfo != null && networkInfo.isConnectedOrConnecting();
+
+//        If connected -> fetch data
+        if (isConnected) {
+            getLoaderManager().initLoader(0, null, this);
+        }
+//       if not connected to internet then don't load loader and set to no internet
+        else {
+            progressBar.setVisibility(View.GONE);
+            textView.setText("No Internet connection.");
+        }
+
+        Log.i(LOG_TAG, "INIT LOADER:" + "After");
     }
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
+        Log.i(LOG_TAG, "ONCreateLOADER: " + i);
+
         return new EarthquakeLoader(EarthquakeActivity.this, JSON_URL);
     }
 
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakeList) {
+        Log.i(LOG_TAG, "ONLoadFinished: " + earthquakeList);
+
+//        Set the circular progress bar to gone if loading finished
+        progressBar.setVisibility(View.GONE);
+
+//        Set the text for the textview. Does not matter bc won't show if adapter !empty
+        textView.setText("There are no earthquakes to be found");
+
+//            Clear the adapter
         adapter.clear();
 
+//            if list has contents then add it to the adapter.
         if (earthquakeList != null && !earthquakeList.isEmpty()) {
-           adapter.addAll(earthquakeList);
+            adapter.addAll(earthquakeList);
         }
 
     }
 
     @Override
     public void onLoaderReset(Loader<List<Earthquake>> loader) {
+        Log.i("LOADERRESET", "RESET: ");
         adapter.clear();
 
-    }
-
-
-    //    The earthquake ASYNCTASK to handle the
-    private class earthquakeAsyncTask extends AsyncTask<String, Void, ArrayList<Earthquake>> {
-
-        @Override
-        protected ArrayList<Earthquake> doInBackground(String... strings) {
-            ArrayList<Earthquake> earthquakeList;
-
-            earthquakeList = QueryUtils.fetchEarthquakeData(strings[0]);
-
-            return earthquakeList;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Earthquake> earthquakeList) {
-//            Clear the adapter of the previous earthquake data
-            adapter.clear();
-
-//            If there is a valid list od earthquakes, add them to the dataset
-//            This triggers the listView
-            if (earthquakeList != null && !earthquakeList.isEmpty()) {
-                adapter.addAll(earthquakeList);
-            }
-
-        }
-    }
-
-    private static class earthquakeLoader extends AsyncTaskLoader<List<Earthquake>> {
-
-        public earthquakeLoader(Context context) {
-            super(context);
-        }
-
-        @Override
-        protected void onStartLoading() {
-           forceLoad();
-        }
-
-        @Override
-        public List<Earthquake> loadInBackground() {
-           List<Earthquake> earthquakes;
-
-            earthquakes = QueryUtils.fetchEarthquakeData(JSON_URL);
-
-            return earthquakes;
-        }
     }
 
 }
