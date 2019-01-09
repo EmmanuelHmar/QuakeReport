@@ -2,6 +2,7 @@ package com.example.android.quakereport;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -23,18 +24,40 @@ public class SettingsActivity extends AppCompatActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.settings_main);
 
+//            update the preference summary when the settings activity is launched
             Preference minMagnitude = findPreference(getString(R.string.settings_min_magnitude_key));
             bindPreferenceSummaryToValue(minMagnitude);
+
+            Preference orderBy = findPreference(getString(R.string.settings_order_by_key));
+            bindPreferenceSummaryToValue(orderBy);
         }
 
-
+//        When we change the newValue of the earthquake min magnitude on preference
+//        This method is invoked with the key of the preference that was changed
         @Override
-        public boolean onPreferenceChange(Preference preference, Object value) {
-            String stringValue = value.toString();
-            preference.setSummary(stringValue);
+        public boolean onPreferenceChange(Preference preference, Object newValue) {
+            String stringValue = newValue.toString();
+
+//            Update using the label instead of the key if listPreference
+            if (preference instanceof ListPreference) {
+                ListPreference listPreference = (ListPreference) preference;
+
+//                Returns the index of the given value (in the entry values array).
+                int prefIndex = listPreference.findIndexOfValue(stringValue);
+
+                if (prefIndex >= 0) {
+                    CharSequence[] labels = listPreference.getEntries();
+                    preference.setSummary(labels[prefIndex]);
+                }
+            } else {
+//                summary to show the current newValue the preference holds
+                preference.setSummary(stringValue);
+            }
+
             return true;
         }
 
+//        Get the preference object, and setup the preference using this helper method
         private void bindPreferenceSummaryToValue(Preference preference) {
             preference.setOnPreferenceChangeListener(this);
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
