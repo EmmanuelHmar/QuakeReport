@@ -44,7 +44,7 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
     private static final String JSON_URL =
             "https://earthquake.usgs.gov/fdsnws/event/1/query";
 
-    public static final String LOG_TAG = EarthquakeActivity.class.getName();
+    public static final String TAG = EarthquakeActivity.class.getName();
 
     private EarthquakeAdapter adapter;
     private TextView textView;
@@ -109,12 +109,12 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
             textView.setText("No Internet connection.");
         }
 
-        Log.i(LOG_TAG, "INIT LOADER:" + "After");
+        Log.i(TAG, "INIT LOADER:" + "After");
     }
 
     @Override
     public Loader<List<Earthquake>> onCreateLoader(int i, Bundle bundle) {
-        Log.i(LOG_TAG, "ONCreateLOADER: " + i);
+        Log.i(TAG, "ONCreateLOADER: " + i);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String minMagnitude = sharedPreferences.getString(getString(R.string.settings_min_magnitude_key),
@@ -129,12 +129,14 @@ public class EarthquakeActivity extends AppCompatActivity implements LoaderManag
         uriBuilder.appendQueryParameter("minmag", minMagnitude);
         uriBuilder.appendQueryParameter("orderby", "time");
 
+        Log.i(TAG, "onCreateLoader: " + uriBuilder.toString());
+
         return new EarthquakeLoader(EarthquakeActivity.this, uriBuilder.toString());
     }
 
     @Override
     public void onLoadFinished(Loader<List<Earthquake>> loader, List<Earthquake> earthquakeList) {
-        Log.i(LOG_TAG, "ONLoadFinished: " + earthquakeList);
+        Log.i(TAG, "ONLoadFinished: " + earthquakeList);
 
 //        Set the circular progress bar to gone if loading finished
         progressBar.setVisibility(View.GONE);
